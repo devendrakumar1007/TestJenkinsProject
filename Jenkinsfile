@@ -36,5 +36,17 @@ pipeline {
 
 	    	}
 		}
+		stage('sonar analysis'){
+			steps{
+			
+			withSonarQubeEnv(credentialsId: 'e6eb3b85-7f7c-457c-a27e-c7b8020255f1') {
+            sh 'mvn sonar:sonar'
+}
+			
+			}
+		
+		}
+		
+		
     }
 }
