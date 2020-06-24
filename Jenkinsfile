@@ -10,10 +10,12 @@ pipeline {
 //		M2_INSTALL = "/home/gamut/Distros/apache-maven-3.6.0/bin/mvn"
 //	}
 
+    
     stages {
 		stage('Clone-Repo') {
 			steps {
-				checkout scm
+				//checkout scm
+				git 'https://github.com/devendrakumar1007/TestJenkinsProject.git'
 			}
 		}
 		stage('Build') {
@@ -39,7 +41,7 @@ pipeline {
 		stage('sonar analysis'){
 			steps{
 			
-			withSonarQubeEnv(credentialsId: 'e6eb3b85-7f7c-457c-a27e-c7b8020255f1') {
+			withSonarQubeEnv(installationName: 'sonar',credentialsId: 'e6eb3b85-7f7c-457c-a27e-c7b8020255f1') {
             sh 'mvn sonar:sonar'
 }
 			
@@ -49,4 +51,23 @@ pipeline {
 		
 		
     }
+
+	post {
+		success {
+			notify("succes")
+		}
+		failure {
+		notify("failure")
+				}
+	}
+
+}
+
+	def notify(status){
+    emailext (
+      to: "you@gmail.com",
+      subject: "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+      body: """<p>${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>""",
+    )
 }
